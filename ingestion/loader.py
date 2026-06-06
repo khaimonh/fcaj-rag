@@ -1,6 +1,6 @@
 import os
 from langchain_community.document_loaders import PyPDFLoader, DirectoryLoader
-def load_documents(docs_path="docs"):
+def loader(docs_path="docs"):
 
     if not os.path.exists(docs_path):
         raise FileNotFoundError(f"The directory {docs_path} does not exist. Please check again.")
