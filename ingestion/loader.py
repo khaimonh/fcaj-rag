@@ -11,3 +11,12 @@ def partition_document(file_path: str):
     
     print(f"Extracted {len(elements)} elements")
     return elements
+
+def gather_image_and_table_elements(elements):
+    images = [element for element in elements if element.category == 'Image']
+    print(f"Found {len(images)} images")
+
+    tables = [element for element in elements if element.category == 'Table']
+    print(f"Found {len(tables)} tables")
+    return images, tables
+
