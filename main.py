@@ -1,13 +1,6 @@
-from ingestion import loader
-from ingestion.chunker_and_summarizer import *
+from ingestion.test_ingestion import test_full_pipeline_with_real_pdf
+from dotenv import load_dotenv
 
-#partition
-file_name = 'test.pdf'
-file_path = './' + file_name
+load_dotenv()
 
-partitioned = loader(file_path)
-
-chunks_by_title = create_chunks_by_title(partitioned)
-
-summarized = summarise_chunks(chunks_by_title)
-
+test_full_pipeline_with_real_pdf("NASDAQ_AAPL_2025.pdf", True)

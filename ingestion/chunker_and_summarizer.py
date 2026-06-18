@@ -2,6 +2,7 @@ from unstructured.chunking.title import chunk_by_title
 import json
 from typing import List
 from langchain_openai import ChatOpenAI
+from langchain_ollama import ChatOllama
 from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage
 
@@ -9,9 +10,9 @@ def create_chunks_by_title(elements):
     
     chunks = chunk_by_title(
         elements,
-        max_characters=3000,
-        new_after_n_chars=2400,
-        combine_text_under_n_chars=500
+        max_characters=6000,
+        new_after_n_chars=4400,
+        combine_text_under_n_chars=1500
     )
     
     print(f"Created {len(chunks)} chunks")
@@ -42,10 +43,16 @@ def separate_content_types(chunk):
     content_data['types'] = list(set(content_data['types']))
     return content_data
 
-def create_ai_summary(text: str, tables: List[str], images: List[str]) -> str:
+def create_ai_summary(text: str, tables: List[str], images: List[str], use_local = False) -> str:
     
     try:
-        llm = ChatOpenAI(model="gpt-4o", temperature=0)
+        if use_local:
+            llm = ChatOllama(
+            model="llama3.2",
+            temperature=0
+            )
+        else:
+            llm = ChatOpenAI(model="gpt-4o", temperature=0)
         
         prompt_text = f"""You are creating a searchable description for document content retrieval.
 
@@ -97,7 +104,7 @@ def create_ai_summary(text: str, tables: List[str], images: List[str]) -> str:
             summary += f" [Contains {len(images)} image(s)]"
         return summary
 
-def summarise_chunks(chunks):
+def summarise_chunks(chunks, use_local=False):
     
     langchain_documents = []
     total_chunks = len(chunks)
@@ -118,7 +125,8 @@ def summarise_chunks(chunks):
                 enhanced_content = create_ai_summary(
                     content_data['text'],
                     content_data['tables'], 
-                    content_data['images']
+                    content_data['images'],
+                    use_local
                 )
                 print(f"     → AI summary created successfully")
                 print(f"     → Enhanced content preview: {enhanced_content[:200]}...")
