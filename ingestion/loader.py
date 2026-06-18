@@ -1,5 +1,17 @@
 from unstructured.partition.pdf import partition_pdf
+
+from pathlib import Path
+import mimetypes
+
+def is_pdf_file(file_path: str) -> bool:
+    path = Path(file_path)
+    mime_type, _ = mimetypes.guess_type(str(path))
+    return mime_type == "application/pdf"
+
 def partition_document(file_path: str):
+
+    if not is_pdf_file(file_path):
+        raise ValueError(f"Not a PDF file: {file_path}")
 
     elements = partition_pdf(
         filename=file_path,
