@@ -1,6 +1,6 @@
 from ingestion.test_ingestion import test_full_pipeline_with_real_pdf
 from ingestion.chunk_loader import *
-from embeddings.upload_vector_store import *
+from embeddings.vector_store import *
 from dotenv import load_dotenv
 # from langchain_chroma import Chroma
 from langchain_ollama import OllamaEmbeddings
