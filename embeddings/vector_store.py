@@ -1,19 +1,35 @@
-from langchain_openai import OpenAIEmbeddings
-from langchain_chroma import Chroma
+from supabase import create_client
+from dotenv import load_dotenv
+import os
+from langchain_community.vectorstores import SupabaseVectorStore
 
-def create_vector_store(documents, persist_directory="dbv1/chroma_db"):
-        
-    embedding_model = OpenAIEmbeddings(model="text-embedding-3-small")
-    
-    print("Creating vector store...")
-    vectorstore = Chroma.from_documents(
-        documents=documents,
-        embedding=embedding_model,
-        persist_directory=persist_directory, 
-        collection_metadata={"hnsw:space": "cosine"}
+load_dotenv(override=True)
+
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+
+def create_supabase_client():
+    supabase = create_client(
+        supabase_key=SUPABASE_KEY,
+        supabase_url=SUPABASE_URL
     )
-    print("Finished creating vector store")
-    
-    print(f"Vector store created and saved to {persist_directory}")
-    return vectorstore
+    return supabase
 
+def upload_vector_store(docs, embeddings, client=create_supabase_client()):
+    
+    vector_store = SupabaseVectorStore.from_documents(
+        docs,
+        embeddings,
+        client=client,
+        table_name="document_chunks",
+        query_name="match_document_chunks"
+    )
+
+def get_vector_store(embeddings, client=create_supabase_client()):
+    vector_store = SupabaseVectorStore(
+        embedding=embeddings,
+        client=client,
+        table_name="document_chunks",
+        query_name="match_document_chunks"
+    )
+    return vector_store
