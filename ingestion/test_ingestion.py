@@ -1,7 +1,7 @@
 
 from ingestion.chunker_and_summarizer import create_chunks_by_title, summarise_chunks
 from ingestion.export_to_json import export_chunks_to_json
-from ingestion.loader import partition_document
+from ingestion.document_loader import partition_document
 
 
 def test_full_pipeline_with_real_pdf(file_path: str, use_local):
