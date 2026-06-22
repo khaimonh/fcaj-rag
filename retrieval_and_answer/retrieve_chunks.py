@@ -4,3 +4,4 @@ def retrieve_chunks(query, db):
 
     return chunks
 
+
