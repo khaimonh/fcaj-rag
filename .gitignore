@@ -1,3 +1,6 @@
 .env
 __pycache__
 NASDAQ_AAPL_*
+dbv*
+8_multi_modal_rag*
+output.json
