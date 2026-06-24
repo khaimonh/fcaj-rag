@@ -1,16 +1,10 @@
 from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
 from langchain_core.messages import HumanMessage
+import json
 
-def generate_final_answer(chunks, query, json, use_local=False):
-    
-    try:
-        if (use_local):
-            llm = ChatOllama(model = "gemma3:4b", temperature=0)
-        else:
-            llm = ChatOpenAI(model="gpt-4o", temperature=0)
-        
-        # Build the text prompt
+def generate_final_answer(chunks, query, json, llm):
+
         prompt_text = f"""Based on the following documents, please answer this question: {query}
 
 CONTENT TO ANALYZE:
@@ -57,12 +51,12 @@ ANSWER:"""
                     })
         
         # Send to AI and get response
-        message = HumanMessage(content=message_content)
-        response = llm.invoke([message])
+        try:
+            message = HumanMessage(content=message_content)
+            response = llm.invoke([message])
+            return response.content
+        except Exception as e:
+            print(f"❌ Answer generation failed: {e}")
+            return "Sorry, I encountered an error while generating the answer."
         
-        return response.content
-        
-    except Exception as e:
-        print(f"❌ Answer generation failed: {e}")
-        return "Sorry, I encountered an error while generating the answer."
 

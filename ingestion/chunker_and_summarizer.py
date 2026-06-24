@@ -1,8 +1,6 @@
 from unstructured.chunking.title import chunk_by_title
 import json
 from typing import List
-from langchain_openai import ChatOpenAI
-from langchain_ollama import ChatOllama
 from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage
 
@@ -43,17 +41,8 @@ def separate_content_types(chunk):
     content_data['types'] = list(set(content_data['types']))
     return content_data
 
-def create_ai_summary(text: str, tables: List[str], images: List[str], use_local = False) -> str:
-    
+def create_ai_summary(text: str, tables: List[str], images: List[str], llm) -> str:
     try:
-        if use_local:
-            llm = ChatOllama(
-            model="gemma3:4b",
-            temperature=0
-            )
-        else:
-            llm = ChatOpenAI(model="gpt-4o", temperature=0)
-        
         prompt_text = f"""You are creating a searchable description for document content retrieval.
 
         CONTENT TO ANALYZE:
@@ -67,19 +56,19 @@ def create_ai_summary(text: str, tables: List[str], images: List[str], use_local
             for i, table in enumerate(tables):
                 prompt_text += f"Table {i+1}:\n{table}\n\n"
         
-                prompt_text += """
-                YOUR TASK:
-                Generate a comprehensive, searchable description that covers:
+        prompt_text += """
+        YOUR TASK:
+        Generate a comprehensive, searchable description that covers:
 
-                1. Key facts, numbers, and data points from text and tables
-                2. Main topics and concepts discussed  
-                3. Questions this content could answer
-                4. Visual content analysis (charts, diagrams, patterns in images)
-                5. Alternative search terms users might use
+        1. Key facts, numbers, and data points from text and tables
+        2. Main topics and concepts discussed  
+        3. Questions this content could answer
+        4. Visual content analysis (charts, diagrams, patterns in images)
+        5. Alternative search terms users might use
 
-                Make it detailed and searchable - prioritize findability over brevity.
+        Make it detailed and searchable - prioritize findability over brevity.
 
-                SEARCHABLE DESCRIPTION:"""
+        SEARCHABLE DESCRIPTION:"""
 
         message_content = [{"type": "text", "text": prompt_text}]
         
@@ -104,7 +93,7 @@ def create_ai_summary(text: str, tables: List[str], images: List[str], use_local
             summary += f" [Contains {len(images)} image(s)]"
         return summary
 
-def summarise_chunks(chunks, use_local=False):
+def summarise_chunks(chunks, llm):
     
     langchain_documents = []
     total_chunks = len(chunks)
@@ -126,7 +115,7 @@ def summarise_chunks(chunks, use_local=False):
                     content_data['text'],
                     content_data['tables'], 
                     content_data['images'],
-                    use_local
+                    llm
                 )
                 print(f"     → AI summary created successfully")
                 print(f"     → Enhanced content preview: {enhanced_content[:200]}...")

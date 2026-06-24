@@ -1,7 +1,7 @@
 import json
 from langchain_core.documents import Document
 
-def load_chunks_from_json(json_path: str, use_local=False):
+def load_chunks_from_json(json_path: str):
     with open(json_path, "r", encoding="utf-8") as f:
         rows = json.load(f)
 
