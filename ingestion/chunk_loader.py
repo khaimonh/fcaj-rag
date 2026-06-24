@@ -1,6 +1,5 @@
 import json
 from langchain_core.documents import Document
-from embeddings.vector_store import create_vector_store
 
 def load_chunks_from_json(json_path: str, use_local=False):
     with open(json_path, "r", encoding="utf-8") as f:
@@ -21,8 +20,9 @@ def load_chunks_from_json(json_path: str, use_local=False):
                 metadata={
                     "chunk_id": row.get("chunk_id"),
                     "raw_text": original.get("raw_text"),
-                    "tables_html_count": len(original.get("tables_html", [])),
-                },
+                    "tables_html": original.get("tables_html", []),
+                    "images_base64": original.get("images_base64", [])
+                }
             )
         )
     return docs

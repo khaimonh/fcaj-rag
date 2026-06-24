@@ -48,7 +48,7 @@ def create_ai_summary(text: str, tables: List[str], images: List[str], use_local
     try:
         if use_local:
             llm = ChatOllama(
-            model="llama3.2",
+            model="gemma3:4b",
             temperature=0
             )
         else:
