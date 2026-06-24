@@ -1,10 +1,14 @@
 from langchain_openai import ChatOpenAI
+from langchain_ollama import ChatOllama
 from langchain_core.messages import HumanMessage
 
-def generate_final_answer(chunks, query, json):
+def generate_final_answer(chunks, query, json, use_local=False):
     
     try:
-        llm = ChatOpenAI(model="gpt-4o", temperature=0)
+        if (use_local):
+            llm = ChatOllama(model = "gemma3:4b", temperature=0)
+        else:
+            llm = ChatOpenAI(model="gpt-4o", temperature=0)
         
         # Build the text prompt
         prompt_text = f"""Based on the following documents, please answer this question: {query}
